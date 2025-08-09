@@ -72,7 +72,7 @@ class SongsService {
     const query = {
       text: `
       UPDATE songs 
-      SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, albumId = $6, updated_at = $7 
+      SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, album_id = $6, updated_at = $7 
       WHERE id = $8 
       RETURNING id
     `,

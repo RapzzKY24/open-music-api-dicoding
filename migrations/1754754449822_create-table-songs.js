@@ -1,6 +1,7 @@
 /**
  * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
  */
+exports.shorthands = undefined;
 
 /**
  * @param pgm {import('node-pg-migrate').MigrationBuilder}
@@ -33,8 +34,8 @@ exports.up = (pgm) => {
       type: "INTEGER",
       notNull: false,
     },
-    albumid: {
-      type: "INTEGER",
+    album_id: {
+      type: "VARCHAR(50)",
       notNull: false,
     },
     created_at: {
@@ -48,11 +49,6 @@ exports.up = (pgm) => {
   });
 };
 
-/**
- * @param pgm {import('node-pg-migrate').MigrationBuilder}
- * @param run {() => void | undefined}
- * @returns {Promise<void> | void}
- */
 exports.down = (pgm) => {
   pgm.dropTable("songs");
 };

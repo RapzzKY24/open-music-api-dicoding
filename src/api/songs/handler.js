@@ -63,16 +63,24 @@ class SongsHandler {
   }
 
   async putSongByIdHandler(request) {
-    this._validator.validateSongPayload(request.payload);
+    try {
+      this._validator.validateSongPayload(request.payload);
 
-    const { id } = request.params;
+      const { id } = request.params;
 
-    await this._service.editSongById(id, request.payload);
+      await this._service.editSongById(id, request.payload);
 
-    return {
-      status: "success",
-      message: "Music berhasil diperbarui",
-    };
+      return {
+        status: "success",
+        message: "Music berhasil diperbarui",
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        status: "fail",
+        message: err.message,
+      };
+    }
   }
 
   async deleteSongByIdHandler(request) {
