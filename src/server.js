@@ -1,5 +1,6 @@
 require("dotenv").config();
 const Hapi = require("@hapi/hapi");
+const JWT = require("@hapi/jwt");
 const ClientError = require("./execptions/ClientError");
 
 //albums
@@ -17,7 +18,14 @@ const users = require("./api/users");
 const UsersService = require("./services/users/users.service");
 const UsersValidator = require("./validator/users");
 
+//authentications
+const authentications = require("./api/authentications");
+const AuthenticationsService = require("./services/authentications/authentications.service");
+const AuthenticationValidator = require("./validator/authentications");
+const TokenManager = require("./tokenize/TokenManager");
+
 const init = async () => {
+  const authenticationsService = new AuthenticationsService();
   const songsService = new SongsService();
   const albumsService = new AlbumsService();
   const usersService = new UsersService();
@@ -30,6 +38,28 @@ const init = async () => {
         origin: ["*"],
       },
     },
+  });
+
+  await server.register([
+    {
+      plugin: JWT,
+    },
+  ]);
+
+  server.auth.strategy("openmusics_jwt", "jwt", {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
   });
 
   await server.register([
@@ -52,6 +82,15 @@ const init = async () => {
       options: {
         service: usersService,
         validator: UsersValidator,
+      },
+    },
+    {
+      plugin: authentications,
+      options: {
+        authenticationsService,
+        usersService,
+        tokenManager: TokenManager,
+        validator: AuthenticationValidator,
       },
     },
   ]);
